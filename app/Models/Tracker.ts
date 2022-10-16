@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, computed } from '@ioc:Adonis/Lucid/Orm'
 
 interface SupportedFeatures {
   fuel_usage: boolean
@@ -59,11 +59,19 @@ export default class Tracker extends BaseModel {
   @column()
   public status: number
 
-  @column()
-  public statusCode: string
+  @computed()
+  public get status_code() {
+    if (this.status == 0) {
+      return "disabled"
+    } else if (this.status == 1) {
+      return "active"
+    } else if (this.status == 2) {
+      return "disabled_by_user"
+    }
+  }
 
   @column()
-  public supportedFeatures: SupportedFeatures 
+  public supportedFeatures: SupportedFeatures
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

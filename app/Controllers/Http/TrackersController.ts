@@ -6,7 +6,7 @@ import { DateTime } from 'luxon'
 export default class TrackersController {
     public async index({ response, userId }: HttpContextContract) {
         const trackers = await Tracker.query().where('user_id', userId)
-        console.log(trackers)
+        console.log(JSON.stringify(trackers))
         return response.json({
             trackers: trackers
         })
@@ -14,7 +14,7 @@ export default class TrackersController {
 
     public async unassign({ request, response, userId }: HttpContextContract) {
         const imei = request.input('imei')
-        const tracker = await Tracker.first(imei)
+        const tracker = await Tracker.find(imei)
         if (!tracker) {
             return response.status(404).json({ message: 'ردیاب یافت نشد.' })
         }
@@ -28,10 +28,12 @@ export default class TrackersController {
 
     public async preassign({ request, response, userId }: HttpContextContract) {
         const imei = request.input('imei')
-        const tracker = await Tracker.first(imei)
+        const tracker = await Tracker.find(imei)
         if (!tracker) {
             return response.status(404).json({ message: 'ردیاب یافت نشد.' })
         }
+        console.log("IMEI: " + imei)
+        console.log(tracker)
         if (tracker.userId == userId) {
             return response.status(400).json({ message: 'این ردیاب متعلق به شما می باشد.' })
         }
@@ -47,7 +49,7 @@ export default class TrackersController {
     public async assign({ request, response, userId }: HttpContextContract) {
         const { imei, title, driver_name, usage, fuel_usage, simcard_number } = request.all()
         console.log(imei)
-        const tracker = await Tracker.first(imei)
+        const tracker = await Tracker.find(imei)
         if (!tracker) {
             return response.status(400).json({ message: 'ردیاب مورد نظر در سامانه ثبت نشده است. درصورت نیاز با پشتیبانی تماس حاصل فرمایید.' })
         }
@@ -82,7 +84,7 @@ export default class TrackersController {
 
     public async update({ request, response, userId }: HttpContextContract) {
         const { imei, title, driver_name, usage, fuel_usage, simcard_number } = request.all()
-        const tracker = await Tracker.first(imei)
+        const tracker = await Tracker.find(imei)
         if (!tracker) {
             return response.status(400).json({ message: 'ردیاب مورد نظر در سامانه ثبت نشده است. درصورت نیاز با پشتیبانی تماس حاصل فرمایید.' })
         }
