@@ -32,4 +32,5 @@ Route.group(() => {
   Route.post('/trackers/assign', 'TrackersController.assign')
   Route.post('/trackers/unassign', 'TrackersController.unassign')
   Route.put('/trackers', 'TrackersController.update')
+  Route.get('/trackers/show', 'TrackersController.show')
 }).middleware('iauth')

@@ -46,6 +46,7 @@ export default class TrackersController {
             supported_features: tracker.supportedFeatures,
         })
     }
+    
     public async assign({ request, response, userId }: HttpContextContract) {
         const { imei, title, driver_name, usage, fuel_usage, simcard_number } = request.all()
         console.log(imei)
@@ -102,5 +103,19 @@ export default class TrackersController {
         tracker.simcardNumber = simcard_number
         await tracker.save()
         return response.json({ success: true })
+    }
+
+    public async show({ request, response, userId }: HttpContextContract) {
+        const imei = request.input('imei')
+        const tracker = await Tracker.find(imei)
+        if (!tracker) {
+            return response.status(404).json({ message: 'ردیاب یافت نشد.' })
+        }
+        if (tracker.userId != userId) {
+            return response.status(400).json({ message: 'این ردیاب متعلق به شما نمی باشد.' })
+        }
+        return response.json({
+            tracker: tracker
+        })
     }
 }
