@@ -25,12 +25,20 @@ Route.get('/', async () => {
 })
 
 Route.group(() => {
+  // Profile
   Route.get('/profile', 'UsersController.profile')
   Route.put('/profile', 'UsersController.profileUpdate')
+  // Trackers
   Route.get('/trackers', 'TrackersController.index')
   Route.post('/trackers/preassign', 'TrackersController.preassign')
   Route.post('/trackers/assign', 'TrackersController.assign')
   Route.post('/trackers/unassign', 'TrackersController.unassign')
   Route.put('/trackers', 'TrackersController.update')
   Route.get('/trackers/show', 'TrackersController.show')
+  // GeoFences
+  Route.get('/geo-fences', 'GeoFencesController.index')
+  Route.post('/geo-fences', 'GeoFencesController.store')
+  Route.put('/geo-fences', 'GeoFencesController.update')
+  Route.delete('/geo-fences', 'GeoFencesController.destroy')
+  Route.get('/geo-fences/show', 'GeoFencesController.show')
 }).middleware('iauth')
