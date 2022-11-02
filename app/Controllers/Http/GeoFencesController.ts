@@ -6,7 +6,7 @@ export default class GeoFencesController {
     public async index({ response, userId }: HttpContextContract) {
         const geoFences = await GeoFence.query().where('user_id', userId)
         return response.json({
-            geoFences: geoFences
+            geo_fences: geoFences
         })
     }
 
@@ -16,7 +16,7 @@ export default class GeoFencesController {
             return response.status(404).json({ message: 'محدوده یافت نشد.' })
         }
         return response.json({
-            geoFence: geoFence
+            geo_fence: geoFence
         })
     }
 
@@ -34,7 +34,7 @@ export default class GeoFencesController {
         })
 
         return response.json({
-            geoFence: geoFence
+            success: true,
         })
     }
 
@@ -55,7 +55,7 @@ export default class GeoFencesController {
         })
         await geoFence.save()
         return response.json({
-            geoFence: geoFence
+            success: true,
         })
     }
 
@@ -66,7 +66,7 @@ export default class GeoFencesController {
         }
         await geoFence.delete()
         return response.json({
-            message: 'محدوده با موفقیت حذف شد.'
+            success: true,
         })
     }
 }
