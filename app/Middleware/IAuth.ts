@@ -7,6 +7,7 @@ export default class IAuth {
     if (token != Env.get('API_KEY')) {
       return ctx.response.status(401).json({ message: 'Unauthorized' })
     }
+    console.log("ReqBody: ", ctx.request.all())
     ctx.userId = parseInt(ctx.request.header('X-User-Id', ''))
 
     ctx.userRole = ctx.request.header('X-User-Role', 'guest')
