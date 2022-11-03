@@ -20,8 +20,8 @@ export default class GeoFencesController {
         })
     }
 
-    public async create({ request, response, userId }: HttpContextContract) {
-        const geoFence = await GeoFence.create({
+    public async store({ request, response, userId }: HttpContextContract) {
+        await GeoFence.create({
             name: request.input('name'),
             polygon: request.input('polygon'),
             userId: userId,
@@ -59,7 +59,7 @@ export default class GeoFencesController {
         })
     }
 
-    public async delete({ response, userId, request }: HttpContextContract) {
+    public async destroy({ response, userId, request }: HttpContextContract) {
         const geoFence = await GeoFence.query().where('user_id', userId).where('id', request.input("geo_fence_id")).first()
         if (!geoFence) {
             return response.status(404).json({ message: 'محدوده یافت نشد.' })
