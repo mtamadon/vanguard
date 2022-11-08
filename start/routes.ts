@@ -41,4 +41,9 @@ Route.group(() => {
   Route.put('/geo-fences', 'GeoFencesController.update')
   Route.delete('/geo-fences', 'GeoFencesController.destroy')
   Route.get('/geo-fences/show', 'GeoFencesController.show')
+  // Chats
+  Route.get('/chats', 'ChatsController.index')
+  Route.get('/chats/messages', 'ChatsController.showMessages')
+  Route.post('/chats/messages', 'ChatsController.sendMessage')
+  Route.post('/chats/read-all', 'ChatsController.readAll')
 }).middleware('iauth')
