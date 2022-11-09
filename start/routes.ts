@@ -25,8 +25,10 @@ Route.get('/', async () => {
 })
 
 Route.group(() => {
+  // Profile
   Route.get('/profile', 'UsersController.profile')
   Route.put('/profile', 'UsersController.profileUpdate')
+  // Trackers
   Route.get('/trackers', 'TrackersController.index')
   Route.post('/trackers/preassign', 'TrackersController.preassign')
   Route.post('/trackers/assign', 'TrackersController.assign')
@@ -34,11 +36,22 @@ Route.group(() => {
   Route.put('/trackers', 'TrackersController.update')
   Route.get('/trackers/show', 'TrackersController.show')
 
-
+  // admin
   Route.get('/admin/trackers/:imei?', 'AdminsController.trackerIndex')
   Route.post('/admin/trackers', 'AdminsController.addTracker')
   Route.delete('/admin/trackers/:imei', 'AdminsController.removeTracker')
   Route.put('/admin/trackers/:imei', 'AdminsController.updateTracker')
 
+  // GeoFences
+  Route.get('/geo-fences', 'GeoFencesController.index')
+  Route.post('/geo-fences', 'GeoFencesController.store')
+  Route.put('/geo-fences', 'GeoFencesController.update')
+  Route.delete('/geo-fences', 'GeoFencesController.destroy')
+  Route.get('/geo-fences/show', 'GeoFencesController.show')
+  // Chats
+  Route.get('/chats', 'ChatsController.index')
+  Route.get('/chats/messages', 'ChatsController.showMessages')
+  Route.post('/chats/messages', 'ChatsController.sendMessage')
+  Route.post('/chats/read-all', 'ChatsController.readAll')
 }).middleware('iauth')
 
