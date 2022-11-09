@@ -33,4 +33,12 @@ Route.group(() => {
   Route.post('/trackers/unassign', 'TrackersController.unassign')
   Route.put('/trackers', 'TrackersController.update')
   Route.get('/trackers/show', 'TrackersController.show')
+
+
+  Route.get('/admin/trackers/:imei?', 'AdminsController.trackerIndex')
+  Route.post('/admin/trackers', 'AdminsController.addTracker')
+  Route.delete('/admin/trackers/:imei', 'AdminsController.removeTracker')
+  Route.put('/admin/trackers/:imei', 'AdminsController.updateTracker')
+
 }).middleware('iauth')
+
