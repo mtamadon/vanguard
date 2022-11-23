@@ -47,3 +47,11 @@ Route.group(() => {
   Route.post('/chats/messages', 'ChatsController.sendMessage')
   Route.post('/chats/read-all', 'ChatsController.readAll')
 }).middleware('iauth')
+
+Route.group(() => {
+  Route.get('/trackers', 'AdminsController.indexTrackers')
+  Route.post('/trackers', 'AdminsController.storeTracker')
+  Route.put('/trackers', 'AdminsController.updateTracker')
+  Route.delete('/trackers', 'AdminsController.destroyTracker')
+  Route.get('/users', 'AdminsController.indexUsers')
+}).prefix('admin').middleware('iauth')
