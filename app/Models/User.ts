@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
-
+import { BaseModel, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import Tracker from './Tracker'
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
@@ -29,6 +29,9 @@ export default class User extends BaseModel {
 
   @column()
   public country: string
+
+  @hasMany(() => Tracker)
+  public trackers: HasMany<typeof Tracker>
 
   @column.dateTime({
     autoCreate: true,

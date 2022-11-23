@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, computed } from '@ioc:Adonis/Lucid/Orm'
-
+import { BaseModel, belongsTo, column, computed, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import User from './User'
 interface SupportedFeatures {
   fuel_usage: boolean
   driver_name: boolean
@@ -72,6 +72,9 @@ export default class Tracker extends BaseModel {
 
   @column()
   public supportedFeatures: SupportedFeatures
+
+  @belongsTo(() => User)
+  public user: BelongsTo<typeof User>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
