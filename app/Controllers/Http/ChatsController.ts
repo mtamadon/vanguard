@@ -56,7 +56,7 @@ export default class ChatsController {
             query.where('id', '>', request.input('after_message_id'))
         }).if(request.input('message_type'), (query) => {
             query.where('message_type', request.input('message_type'))
-        }).orderBy('id', this.queryOrderType(request)).limit(100)
+        }).orderBy('id', this.queryOrderType(request)).limit(20)
 
         if (this.queryOrderType(request) == 'desc') {
             messages = messages.reverse()
