@@ -1,11 +1,10 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import FCMDevice from 'App/Models/FCMDevice'
-import md5 from 'md5'
 export default class FCMController {
     public async store({ request, response, userId }: HttpContextContract) {
         const deviceToken = request.input('token')
         const platform = request.input('platform')
-        const token_md5 = md5(deviceToken)
+        const token_md5 = request.input('token_md5')
         const device = await FCMDevice.findBy('token_md5', token_md5)
         if (device) {
             device.token = deviceToken
