@@ -46,6 +46,9 @@ Route.group(() => {
   Route.get('/chats/messages', 'ChatsController.showMessages')
   Route.post('/chats/messages', 'ChatsController.sendMessage')
   Route.post('/chats/read-all', 'ChatsController.readAll')
+
+  Route.post('/fcm-devices', 'FcmDevicesController.store')
+  Route.delete('/fcm-devices', 'FcmDevicesController.destroy')
 }).middleware('iauth')
 
 Route.group(() => {
