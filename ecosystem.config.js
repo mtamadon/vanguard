@@ -12,7 +12,7 @@ module.exports = {
             "ref": "origin/master",
             "repo": "git@gitlab.com:ilenkrad/vanguard.git",
             "path": "/root/van",
-            "post-deploy": "source ~/.nvm/nvm.sh  && npm ci"
+            "post-deploy": "source ~/.nvm/nvm.sh"
         }
     }
 };
