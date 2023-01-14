@@ -22,6 +22,12 @@ export default class User extends BaseModel {
   public avatar: string | null
 
   @column()
+  public password: string
+
+  @column()
+  public status: number
+
+  @column()
   public city: string | null
 
   @column()

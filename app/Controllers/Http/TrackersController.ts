@@ -23,6 +23,7 @@ export default class TrackersController {
         }
         tracker.userId = null
         await tracker.save()
+        await Tracker.postUnassignTracker(tracker.imei)
         return response.json({ success: true })
     }
 
@@ -46,7 +47,7 @@ export default class TrackersController {
             supported_features: tracker.supportedFeatures,
         })
     }
-    
+
     public async assign({ request, response, userId }: HttpContextContract) {
         const { imei, title, driver_name, usage, fuel_usage, simcard_number } = request.all()
         console.log(imei)

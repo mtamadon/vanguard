@@ -22,9 +22,17 @@ export default class Message extends BaseModel {
   @column()
   meta: Object | string
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({
+    autoCreate: true, serialize: (value: DateTime | null) => {
+      return value ? value.setZone('utc').toISO() : value
+    }
+  })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({
+    autoCreate: true, autoUpdate: true, serialize: (value: DateTime | null) => {
+      return value ? value.setZone('utc').toISO() : value
+    }
+  })
   public updatedAt: DateTime
 }

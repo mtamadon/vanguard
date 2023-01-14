@@ -56,5 +56,16 @@ Route.group(() => {
   Route.post('/trackers', 'AdminsController.storeTracker')
   Route.put('/trackers', 'AdminsController.updateTracker')
   Route.delete('/trackers', 'AdminsController.destroyTracker')
+  Route.post('/trackers/reset', 'AdminsController.resetTracker')
+
   Route.get('/users', 'AdminsController.indexUsers')
+  Route.put('/users', 'AdminsController.updateUser')
+  Route.get('/users/show', 'AdminsController.showUser')
+  Route.delete('/users', 'AdminsController.destroyUser')
+  
+  Route.post('/sales/precheck', 'AdminsController.preCheckSales')
+  Route.post('/sales', 'AdminsController.storeSale')
+  Route.get('/sales', 'AdminsController.indexSales')
+  Route.delete('/sales', 'AdminsController.destroySale')
+
 }).prefix('admin').middleware('iauth')

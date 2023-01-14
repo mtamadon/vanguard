@@ -1,6 +1,9 @@
 import { DateTime } from 'luxon'
 import { BaseModel, belongsTo, column, computed, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
+import Chat from './Chat'
+import Message from './Message'
+import GeoFence from './GeoFence'
 interface SupportedFeatures {
   fuel_usage: boolean
   driver_name: boolean
@@ -33,7 +36,7 @@ export default class Tracker extends BaseModel {
   public resellerID: number | null
 
   @column()
-  public installerID: number | null
+  public installerId: number | null
 
   @column()
   public simcardNumber: string | null
@@ -76,9 +79,33 @@ export default class Tracker extends BaseModel {
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({
+    autoCreate: true, serialize: (value: DateTime | null) => {
+      return value ? value.setZone('utc').toISO() : value
+    }
+  })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({
+    autoCreate: true, autoUpdate: true, serialize: (value: DateTime | null) => {
+      return value ? value.setZone('utc').toISO() : value
+    }
+  })
   public updatedAt: DateTime
+
+
+  public static async postUnassignTracker(imei: number) {
+    // remove chats and messages
+    const chat = await Chat.findBy('tracker_imei', imei)
+    if (chat) {
+      await chat.delete()
+      await Message.query().where('chat_id', chat.id).delete()
+    }
+
+    // remove geo fence
+    const geoFence = await GeoFence.findBy('tracker_imei', imei)
+    if (geoFence) {
+      await geoFence.delete()
+    }
+  }
 }

@@ -15,7 +15,7 @@ export default class IAuth {
     console.log("userId:", ctx.userId, "role", ctx.userRole)
 
     await next()
-    console.log("resBody: ", ctx.response.getBody())
+    console.log("resBody: ", JSON.parse(JSON.stringify(ctx.response.getBody())))
 
   }
 }
