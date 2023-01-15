@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import Tracker from 'App/Models/Tracker'
 import Sale from 'App/Models/Sale'
+import Log, { LogActions } from 'App/Models/Log'
 export default class AdminsController {
 
     public async indexUsers({ request }: HttpContextContract) {
@@ -92,6 +93,7 @@ export default class AdminsController {
         const tracker = await Tracker.findOrFail(request.input('imei'))
         await tracker.delete()
         await Tracker.postUnassignTracker(tracker.imei)
+        await Log.log(LogActions.TrackerDelete, "ردیاب حذف شد", tracker.imei, JSON.parse(JSON.stringify(tracker)))
         return {
             success: true
         }
@@ -102,6 +104,8 @@ export default class AdminsController {
         tracker.userId = null
         await tracker.save()
         await Tracker.postUnassignTracker(tracker.imei)
+        await Log.log(LogActions.TrackerUnassignByAdmin, "ردیاب از کاربر توسط ادمین حذف شد", tracker.imei)
+
         return {
             success: true
         }
@@ -128,6 +132,7 @@ export default class AdminsController {
                 } catch (e) {
                     failed.push(imei)
                 }
+                Log.log(LogActions.TrackerCreate, "ردیاب ایجاد شد", imei).catch(console.error);
             }
         }
         return {
@@ -165,6 +170,8 @@ export default class AdminsController {
         await tracker.save()
 
         await Tracker.postUnassignTracker(tracker.imei)
+
+        await Log.log(LogActions.TrackerReset, "ردیاب صفر شد", tracker.imei)
         return {
             success: true
         }
@@ -238,6 +245,15 @@ export default class AdminsController {
             tracker.resellerID = reseller_id
             tracker.soldToResellerAt = sold_at
             await tracker.save()
+
+            Log.log(LogActions.TrackerSold, "ردیاب فروخته شد", tracker.imei, {
+                reseller_id: reseller_id,
+                sold_at: sold_at,
+                box_code: sale.boxCode,
+                sale_id: sale.id,
+                sale_created_at: sale.createdAt,
+                sale_title: sale.title,
+            }).catch(console.error);
         }
 
         const storedSale = await Sale.findOrFail(sale.id)
@@ -272,6 +288,14 @@ export default class AdminsController {
             tracker.resellerID = null
             tracker.soldToResellerAt = null
             await tracker.save()
+            Log.log(LogActions.TrackerUnsold, "ردیاب از فروش خارج شد", tracker.imei, {
+                reseller_id: sale.resellerId,
+                sold_at: sale.soldAt,
+                box_code: sale.boxCode,
+                sale_id: sale.id,
+                sale_created_at: sale.createdAt,
+                sale_title: sale.title,
+            }).catch(console.error);
         }
         return {
             success: true
