@@ -57,12 +57,14 @@ Route.group(() => {
   Route.put('/trackers', 'AdminsController.updateTracker')
   Route.delete('/trackers', 'AdminsController.destroyTracker')
   Route.post('/trackers/reset', 'AdminsController.resetTracker')
+  Route.post('/trackers/renewals', 'AdminsController.createRenewal')
+  Route.get('/trackers/renewals', 'AdminsController.listRenewals')
 
   Route.get('/users', 'AdminsController.indexUsers')
   Route.put('/users', 'AdminsController.updateUser')
   Route.get('/users/show', 'AdminsController.showUser')
   Route.delete('/users', 'AdminsController.destroyUser')
-  
+
   Route.post('/sales/precheck', 'AdminsController.preCheckSales')
   Route.post('/sales', 'AdminsController.storeSale')
   Route.get('/sales', 'AdminsController.indexSales')

@@ -3,6 +3,7 @@ import User from 'App/Models/User'
 import Tracker from 'App/Models/Tracker'
 import Sale from 'App/Models/Sale'
 import Log, { LogActions } from 'App/Models/Log'
+import Renewal from 'App/Models/Renewal'
 export default class AdminsController {
 
     public async indexUsers({ request }: HttpContextContract) {
@@ -165,7 +166,7 @@ export default class AdminsController {
         tracker.simcardNumber = null
         tracker.firstAssignedAt = null
         tracker.firstConnectedAt = null
-        tracker.ExpiresAt = null
+        tracker.expiresAt = null
         tracker.WarrantyExpiresAt = null
         await tracker.save()
 
@@ -189,7 +190,7 @@ export default class AdminsController {
             const tracker = trackers.find((tracker) => tracker.imei == imei)
             if (tracker) {
                 model = tracker.model
-                if (tracker.resellerID == null) {
+                if (tracker.resellerId == null) {
                     free.push(imei)
                     weight += 320
                 } else {
@@ -216,7 +217,7 @@ export default class AdminsController {
         for (const imei of imeis) {
             const tracker = trackers.find((tracker) => tracker.imei == imei)
             if (tracker) {
-                if (tracker.resellerID == null) {
+                if (tracker.resellerId == null) {
                     imeisList.push(imei)
                     model = tracker.model
                 } else {
@@ -242,7 +243,7 @@ export default class AdminsController {
         await sale.save()
 
         for (const tracker of trackers) {
-            tracker.resellerID = reseller_id
+            tracker.resellerId = reseller_id
             tracker.soldToResellerAt = sold_at
             await tracker.save()
 
@@ -285,7 +286,7 @@ export default class AdminsController {
             if (!tracker) {
                 continue
             }
-            tracker.resellerID = null
+            tracker.resellerId = null
             tracker.soldToResellerAt = null
             await tracker.save()
             Log.log(LogActions.TrackerUnsold, "ردیاب از فروش خارج شد", tracker.imei, {
@@ -297,6 +298,31 @@ export default class AdminsController {
                 sale_title: sale.title,
             }).catch(console.error);
         }
+        return {
+            success: true
+        }
+    }
+
+    public async renewTracker({ request, response, userId }: HttpContextContract) {
+        const { imei, reference, paid_at } = request.all()
+        const tracker = await Tracker.findByOrFail('imei', imei)
+        if (tracker.expiresAt == null || tracker.userId == null) {
+            return response.status(400).json({ message: 'ردیاب فعال نیست' })
+        }
+
+        const renewal = new Renewal()
+        renewal.imeis = JSON.stringify([imei])
+        renewal.trackersCount = 1
+        renewal.package = 'basic-yearly'
+        renewal.amount = 100000
+        renewal.totalAmount = 100000
+        renewal.userId = tracker.userId
+        renewal.adminId = userId
+        renewal.resellerId = tracker.resellerId
+        await renewal.save()
+
+        await renewal.markAsPaid(reference, paid_at)
+
         return {
             success: true
         }

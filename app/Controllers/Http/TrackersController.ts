@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Renewal from 'App/Models/Renewal'
 
 import Tracker from "App/Models/Tracker"
 import { DateTime } from 'luxon'
@@ -77,7 +78,7 @@ export default class TrackersController {
             tracker.firstAssignedAt = DateTime.now()
             let expiresAt = new Date()
             expiresAt.setDate(expiresAt.getDate() + 365)
-            tracker.ExpiresAt = DateTime.fromJSDate(expiresAt)
+            tracker.expiresAt = DateTime.fromJSDate(expiresAt)
             tracker.WarrantyExpiresAt = DateTime.fromJSDate(expiresAt)
         }
         await tracker.save()
@@ -117,6 +118,45 @@ export default class TrackersController {
         }
         return response.json({
             tracker: tracker
+        })
+    }
+
+    public async createRenewal({ request, response, userId }: HttpContextContract) {
+        const { imeis } = request.all()
+        const trackers = await Tracker.query().whereIn('imei', imeis).andWhere('user_id', userId)
+        if (trackers.length == 0) {
+            return response.status(404).json({ message: 'ردیاب یافت نشد.' })
+        }
+
+        let amount = 100000
+        let total = trackers.length * amount
+        let finalImeis = []
+        for (let tracker of trackers) {
+            imeis.push(tracker.imei)
+        }
+        let renewal = new Renewal()
+
+        renewal.userId = userId
+        renewal.imeis = finalImeis
+        renewal.amount = amount
+        renewal.totalAmount = total
+        renewal.isPaid = false
+        renewal.package = 'basic-1year'
+        renewal.paymentMethod = 'online'
+        renewal.trackersCount = trackers.length
+        renewal.adminId = 0
+
+        await renewal.save()
+
+        return response.json({
+            renewal: renewal
+        })
+    }
+
+    public async listRenewals({ response, userId }: HttpContextContract) {
+        const renewals = await Renewal.query().where('user_id', userId).orderBy('id', 'desc')
+        return response.json({
+            renewals: renewals
         })
     }
 }

@@ -11,6 +11,7 @@ export enum LogActions {
   TrackerUnassignByAdmin = 'tracker.unassign.admin',
   TrackerSold = 'tracker.sold',
   TrackerUnsold = 'tracker.unsold',
+  TrackerRenewed = 'tracker.renewed',
 }
 
 export default class Log extends BaseModel {

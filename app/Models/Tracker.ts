@@ -33,7 +33,7 @@ export default class Tracker extends BaseModel {
   public usage: string
 
   @column()
-  public resellerID: number | null
+  public resellerId: number | null
 
   @column()
   public installerId: number | null
@@ -51,7 +51,7 @@ export default class Tracker extends BaseModel {
   public WarrantyExpiresAt: DateTime | null
 
   @column()
-  public ExpiresAt: DateTime | null
+  public expiresAt: DateTime | null
 
   @column()
   public fuelUsage: number | null
