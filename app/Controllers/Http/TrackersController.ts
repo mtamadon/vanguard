@@ -124,20 +124,17 @@ export default class TrackersController {
     public async createRenewal({ request, response, userId }: HttpContextContract) {
         const { imeis } = request.all()
         const trackers = await Tracker.query().whereIn('imei', imeis).andWhere('user_id', userId)
-        if (trackers.length == 0) {
+        if (trackers.length != imeis.length || trackers.length == 0) {
             return response.status(404).json({ message: 'ردیاب یافت نشد.' })
         }
 
         let amount = 100000
         let total = trackers.length * amount
-        let finalImeis = []
-        for (let tracker of trackers) {
-            imeis.push(tracker.imei)
-        }
+
         let renewal = new Renewal()
 
         renewal.userId = userId
-        renewal.imeis = finalImeis
+        renewal.imeis = JSON.stringify(imeis)
         renewal.amount = amount
         renewal.totalAmount = total
         renewal.isPaid = false
@@ -147,6 +144,8 @@ export default class TrackersController {
         renewal.adminId = 0
 
         await renewal.save()
+        renewal.imeis = imeis
+
 
         return response.json({
             renewal: renewal
