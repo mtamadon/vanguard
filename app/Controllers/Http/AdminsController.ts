@@ -100,8 +100,15 @@ export default class AdminsController {
         }
     }
 
-    public async unassignTracker({ request }: HttpContextContract) {
+    public async unassignTracker({ request, response }: HttpContextContract) {
         const tracker = await Tracker.findOrFail(request.input('imei'))
+        if (!tracker.userId) {
+
+            return response.badRequest({
+                message: "این ردیاب به کاربری اختصاص داده نشده است"
+            })
+        }
+
         tracker.userId = null
         await tracker.save()
         await Tracker.postUnassignTracker(tracker.imei)
@@ -321,10 +328,26 @@ export default class AdminsController {
         renewal.resellerId = tracker.resellerId
         await renewal.save()
 
-        await renewal.markAsPaid(reference, paid_at)
-
+        await renewal.markAsPaid(paid_at, reference)
+        renewal.imeis = JSON.parse(renewal.imeis)
         return {
-            success: true
+            renewal: renewal
+        }
+    }
+
+    public async indexTrackerLogs({ request }: HttpContextContract) {
+        const { imei } = request.all()
+        const logs = await Log.query().where('tracker_imei', imei).orderBy('id', 'desc')
+        return {
+            logs: logs
+        }
+    }
+
+    public async listUserRenewals({ request }: HttpContextContract) {
+        const { user_id } = request.all()
+        const renewals = await Renewal.query().where('user_id', user_id).orderBy('id', 'desc')
+        return {
+            renewals: renewals
         }
     }
 }

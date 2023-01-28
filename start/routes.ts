@@ -35,6 +35,8 @@ Route.group(() => {
   Route.post('/trackers/unassign', 'TrackersController.unassign')
   Route.put('/trackers', 'TrackersController.update')
   Route.get('/trackers/show', 'TrackersController.show')
+  Route.post('/trackers/renewals', 'TrackersController.createRenewal')
+  Route.get('/trackers/renewals', 'TrackersController.listRenewals')
   // GeoFences
   Route.get('/geo-fences', 'GeoFencesController.index')
   Route.post('/geo-fences', 'GeoFencesController.store')
@@ -57,13 +59,15 @@ Route.group(() => {
   Route.put('/trackers', 'AdminsController.updateTracker')
   Route.delete('/trackers', 'AdminsController.destroyTracker')
   Route.post('/trackers/reset', 'AdminsController.resetTracker')
-  Route.post('/trackers/renewals', 'AdminsController.createRenewal')
-  Route.get('/trackers/renewals', 'AdminsController.listRenewals')
+  Route.post('/trackers/renew', 'AdminsController.renewTracker')
+  Route.get('/trackers/logs', 'AdminsController.indexTrackerLogs')
+  Route.post('/trackers/unassign', 'AdminsController.unassignTracker')
 
   Route.get('/users', 'AdminsController.indexUsers')
   Route.put('/users', 'AdminsController.updateUser')
   Route.get('/users/show', 'AdminsController.showUser')
   Route.delete('/users', 'AdminsController.destroyUser')
+  Route.get("/users/renewals", "AdminsController.listUserRenewals")
 
   Route.post('/sales/precheck', 'AdminsController.preCheckSales')
   Route.post('/sales', 'AdminsController.storeSale')
