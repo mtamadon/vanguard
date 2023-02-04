@@ -28,7 +28,7 @@ export default class Chat extends BaseModel {
   public createdAt: DateTime
 
   @column.dateTime({
-    autoCreate: true, autoUpdate: true, serialize: (value: DateTime | null) => {
+    autoCreate: true, serialize: (value: DateTime | null) => {
       return value ? value.setZone('utc').toISO() : value
     }
   })
