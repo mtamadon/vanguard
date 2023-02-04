@@ -17,6 +17,9 @@ export default class FCMDevice extends BaseModel {
   @column()
   public token_md5: string
 
+  @column()
+  public userSessionId: string
+
   @column.dateTime({
     autoCreate: true, serialize: (value: DateTime | null) => {
       return value ? value.setZone('utc').toISO() : value

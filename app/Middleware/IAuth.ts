@@ -12,6 +12,8 @@ export default class IAuth {
 
     ctx.userRole = ctx.request.header('X-User-Role', 'guest')
 
+    ctx.userSessionId = ctx.request.header('X-User-Session-Id', '')
+
     console.log("userId:", ctx.userId, "role", ctx.userRole)
 
     await next()

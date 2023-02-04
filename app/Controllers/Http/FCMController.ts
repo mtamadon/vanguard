@@ -1,7 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import FCMDevice from 'App/Models/FCMDevice'
 export default class FCMController {
-    public async store({ request, response, userId }: HttpContextContract) {
+    public async store({ request, response, userId, userSessionId }: HttpContextContract) {
         const deviceToken = request.input('token')
         const platform = request.input('platform')
         const token_md5 = request.input('token_md5')
@@ -10,6 +10,7 @@ export default class FCMController {
             device.token = deviceToken
             device.userId = userId
             device.platform = platform
+            device.userSessionId = userSessionId
             await device.save()
         } else {
             const newDevice = new FCMDevice()
@@ -17,6 +18,7 @@ export default class FCMController {
             newDevice.userId = userId
             newDevice.platform = platform
             newDevice.token_md5 = token_md5
+            newDevice.userSessionId = userSessionId
             await newDevice.save()
         }
 
