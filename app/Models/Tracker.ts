@@ -4,6 +4,8 @@ import User from './User'
 import Chat from './Chat'
 import Message from './Message'
 import GeoFence from './GeoFence'
+import Reminder from './Reminder'
+import GeoFenceHistory from './GeoFenceHistory'
 interface SupportedFeatures {
   fuel_usage: boolean
   driver_name: boolean
@@ -103,9 +105,10 @@ export default class Tracker extends BaseModel {
     }
 
     // remove geo fence
-    const geoFence = await GeoFence.findBy('tracker_imei', imei)
-    if (geoFence) {
-      await geoFence.delete()
-    }
+    await GeoFence.query().where('tracker_imei', imei).delete()
+
+    await Reminder.query().where('tracker_imei', imei).delete()
+    await GeoFenceHistory.query().where('imei', imei).delete()
+    
   }
 }
