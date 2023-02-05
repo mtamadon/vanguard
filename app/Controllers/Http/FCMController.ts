@@ -5,6 +5,8 @@ export default class FCMController {
         const deviceToken = request.input('token')
         const platform = request.input('platform')
         const token_md5 = request.input('token_md5')
+
+        await FCMDevice.query().where('user_id', userId).where('user_session_id', userSessionId).delete()
         const device = await FCMDevice.findBy('token_md5', token_md5)
         if (device) {
             device.token = deviceToken
