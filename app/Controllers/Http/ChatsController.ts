@@ -100,6 +100,9 @@ export default class ChatsController {
         newMessage.message = message
         newMessage.meta = {}
         await newMessage.save()
+
+        chat.updatedAt = newMessage.createdAt
+        await chat.save()
         return response.json({ success: true })
     }
 
