@@ -11,7 +11,13 @@ export default class AdminsController {
 
         if (imei) {
             const tracker = await Tracker.findBy('imei', imei)
-            user_id = tracker?.userId
+            console.log(tracker);
+            
+            if (tracker) {
+                user_id = tracker.userId
+            } else {
+                user_id = "0"
+            }
         }
 
         const users = await User.query().if(role, (query) => {
