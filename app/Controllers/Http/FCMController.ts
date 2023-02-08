@@ -46,6 +46,7 @@ export default class FCMController {
         }
         return response.json({
             success: true,
+            not_found: !device,
         })
     }
 }
