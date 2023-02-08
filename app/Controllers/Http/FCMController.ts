@@ -45,7 +45,7 @@ export default class FCMController {
             await device.delete()
         }
         return response.json({
-            success: true,
+            success: !device,
             not_found: !device,
         })
     }
