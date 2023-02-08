@@ -38,12 +38,13 @@ export default class FCMController {
         })
     }
 
-    public async destroy({ request, response, userId }: HttpContextContract) {
+    public async destroy({ request, response, userId, userSessionId }: HttpContextContract) {
         const token_md5 = request.input('token_md5')
         const device = await FCMDevice.findBy('token_md5', token_md5)
         if (device && device.userId == userId) {
             await device.delete()
         }
+        await FCMDevice.query().where('user_id', userId).where('user_session_id', userSessionId).delete()
         return response.json({
             success: !device,
             not_found: !device,
