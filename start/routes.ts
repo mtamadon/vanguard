@@ -28,6 +28,7 @@ Route.group(() => {
   // Profile
   Route.get('/profile', 'UsersController.profile')
   Route.put('/profile', 'UsersController.profileUpdate')
+  Route.post('/profile/telegram-bot', 'UsersController.setTelegramBotStatus')
   // Trackers
   Route.get('/trackers', 'TrackersController.index')
   Route.post('/trackers/preassign', 'TrackersController.preassign')

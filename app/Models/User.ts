@@ -39,6 +39,9 @@ export default class User extends BaseModel {
   @hasMany(() => Tracker)
   public trackers: HasMany<typeof Tracker>
 
+  @column()
+  public telegramBot: boolean
+
   @column.dateTime({
     autoCreate: true,
     serialize: (value: DateTime | null) => {

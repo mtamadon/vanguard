@@ -28,4 +28,19 @@ export default class UsersController {
         return response.json({ user })
     }
 
+    public async setTelegramBotStatus({ request, userId }: HttpContextContract) {
+        const { telegram_bot } = request.all()
+
+        const user = await User.findOrFail(userId)
+        user.telegramBot = telegram_bot
+        await user.save()
+        if (telegram_bot === false) {
+            await UserSession.query().where('user_id', user.id).where('service_id', "telegram").delete()
+        }
+
+        return {
+            success: true
+        }
+    }
+
 }
