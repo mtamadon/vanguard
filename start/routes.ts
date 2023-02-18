@@ -18,7 +18,9 @@
 |
 */
 
+import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import Route from '@ioc:Adonis/Core/Route'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 Route.get('/', async () => {
   return { hello: 'world' }
@@ -76,3 +78,16 @@ Route.group(() => {
   Route.delete('/sales', 'AdminsController.destroySale')
 
 }).prefix('admin').middleware('iauth')
+
+Route.get("/healthcheck", async ({ response }: HttpContextContract) => {
+  const report = await HealthCheck.getReport()
+  if (report.healthy) {
+    return {
+      success: true,
+    }
+  } else {
+    response.status(500).send({
+      success: false,
+    })
+  }
+})
