@@ -43,8 +43,15 @@ export default class AdminsController {
         }
     }
 
-    public async updateUser({ request }: HttpContextContract) {
+    public async updateUser({ request, response }: HttpContextContract) {
         const user = await User.findOrFail(request.input('id'))
+        if (request.input('role') == 11 ){
+            // is not allowed to change role to admin
+            return response.status(400).json({
+                success: false,
+                message: "You are not allowed to change role to admin"
+            })
+        }
         user.merge(request.only(['name', 'email', 'phone_number', 'role', 'avatar', 'city', 'language', 'country', 'status']))
         await user.save()
         return {
