@@ -80,7 +80,6 @@ export default class AdminsController {
             .if(imei != '0', (query) => {
                 query.where('imei', imei)
             })
-            .whereNotNull('user_id')
             .preload('user').orderBy('first_assigned_at', 'desc').limit(50)
 
         return {
