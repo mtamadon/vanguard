@@ -1,5 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-
+import Env from '@ioc:Adonis/Core/Env'
 import Chat from "App/Models/Chat";
 import Message from 'App/Models/Message';
 
@@ -8,27 +8,29 @@ export default class ChatsController {
     public async index({ response, userId }: HttpContextContract) {
         const chats = await Chat.query().where('user_id', userId).orderBy('updated_at', 'desc')
         //if support chat is not exist, create it
-        let supportChat = chats.find(chat => chat.chatType == "support")
-        if (!supportChat) {
-            supportChat = new Chat()
-            supportChat.userId = userId
-            supportChat.chatType = "support"
-            supportChat.title = "پشتیبانی"
-            supportChat.newMessages = 1
-            await supportChat.save()
-            // add chat to chats array
-            chats.push(supportChat)
-            // add first message to support chat
-            const firstMessage = new Message()
-            firstMessage.userId = userId
-            firstMessage.chatId = supportChat.id
-            firstMessage.messageType = "admin_support"
-            firstMessage.message = "باسلام به کاربر گرامی خوش آمدید. لطفا سوالات خود را از طریق این چت پشتیبانی بپرسید."
-            firstMessage.meta = {
-                "agent_id": 1,
+
+            let supportChat = chats.find(chat => chat.chatType == "support")
+
+            if (!supportChat && Env.get('INTERNAL_SUPPORT_CHAT_ENABLED') == "enabled") {
+                supportChat = new Chat()
+                supportChat.userId = userId
+                supportChat.chatType = "support"
+                supportChat.title = "پشتیبانی"
+                supportChat.newMessages = 1
+                await supportChat.save()
+                // add chat to chats array
+                chats.push(supportChat)
+                // add first message to support chat
+                const firstMessage = new Message()
+                firstMessage.userId = userId
+                firstMessage.chatId = supportChat.id
+                firstMessage.messageType = "admin_support"
+                firstMessage.message = "باسلام به کاربر گرامی خوش آمدید. لطفا سوالات خود را از طریق این چت پشتیبانی بپرسید."
+                firstMessage.meta = {
+                    "agent_id": 1,
+                }
+                await firstMessage.save()
             }
-            await firstMessage.save()
-        }
 
         return response.json({
             chats: chats
