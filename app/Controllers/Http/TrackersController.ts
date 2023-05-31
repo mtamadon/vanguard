@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Log, { LogActions } from 'App/Models/Log'
 import Renewal from 'App/Models/Renewal'
 
 import Tracker from "App/Models/Tracker"
@@ -22,6 +23,7 @@ export default class TrackersController {
         if (tracker.userId != userId) {
             return response.status(400).json({ message: 'این ردیاب متعلق به شما نمی باشد.' })
         }
+        await Log.log(LogActions.TrackerUnassignByUser, "ردیاب از کاربر حذف شد", tracker.imei, JSON.parse(JSON.stringify(tracker))).catch(console.log)
         tracker.userId = null
         await tracker.save()
         await Tracker.postUnassignTracker(tracker.imei)
@@ -82,6 +84,7 @@ export default class TrackersController {
             tracker.WarrantyExpiresAt = DateTime.fromJSDate(expiresAt)
         }
         await tracker.save()
+        await Log.log(LogActions.TrackerAssign, "ردیاب به کاربر اضافه شد", tracker.imei, JSON.parse(JSON.stringify(tracker))).catch(console.log)
         return response.json({ success: true })
     }
 

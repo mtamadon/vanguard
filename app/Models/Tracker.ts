@@ -109,6 +109,5 @@ export default class Tracker extends BaseModel {
 
     await Reminder.query().where('tracker_imei', imei).delete()
     await GeoFenceHistory.query().where('tracker_imei', imei).delete()
-    
   }
 }
