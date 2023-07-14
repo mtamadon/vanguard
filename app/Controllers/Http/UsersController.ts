@@ -19,12 +19,7 @@ export default class UsersController {
         if (oldPhoneNumber !== user.phoneNumber) {
             user.status = 2 // 2 = phone number not verified            
         }
-        await user.save()
-
-        if (user.status === 2) {
-            // logout all sessions
-            await UserSession.query().where('user_id', user.id).delete()
-        }
+        
         return response.json({ user })
     }
 
