@@ -4,6 +4,7 @@ import Tracker from 'App/Models/Tracker'
 import Sale from 'App/Models/Sale'
 import Log, { LogActions } from 'App/Models/Log'
 import Renewal from 'App/Models/Renewal'
+import { googleFormsConfigs } from 'Config/googleForms'
 export default class AdminsController {
 
     public async indexUsers({ request }: HttpContextContract) {
@@ -45,7 +46,7 @@ export default class AdminsController {
 
     public async updateUser({ request, response }: HttpContextContract) {
         const user = await User.findOrFail(request.input('id'))
-        if (request.input('role') == 11 ){
+        if (request.input('role') == 11) {
             // is not allowed to change role to admin
             return response.status(400).json({
                 success: false,
@@ -363,4 +364,32 @@ export default class AdminsController {
             renewals: renewals
         }
     }
+
+    public async indexUserGoogleForms({ request, userId }: HttpContextContract) {
+        const { user_id } = request.all()
+        const user = await User.findOrFail(user_id)
+        const admin = await User.findOrFail(userId)
+        const forms = new Array()
+        let imeis = new Array()
+        for (const tracker of user.trackers) {
+            imeis.push(tracker.imei)
+        }
+
+        for (const fc of googleFormsConfigs) {
+            const form = {
+                id: fc.id,
+                code: fc.code,
+                title: fc.title,
+                url: '',
+                sheet_link: fc.sheetLink
+            }
+            const url = `https://docs.google.com/forms/d/e/${fc.id}/viewform?usp=pp_url&entry.${fc.prefilledKeys.supportStaffId}=${admin.id}&entry.${fc.prefilledKeys.supportStaffEmail}=${admin.email}&entry.${fc.prefilledKeys.supportStaffName}=${admin.name}&entry.${fc.prefilledKeys.userId}=${user.id}&entry.${fc.prefilledKeys.phonenumber}=${user.phoneNumber.substring(1)}&entry.${fc.prefilledKeys.name}=${user.name}&entry.${fc.prefilledKeys.imeis}=${imeis.join('%0A')}&embedded=true`
+            form.url = url
+        }
+
+        return {
+            forms: forms
+        }
+    }
 }
+

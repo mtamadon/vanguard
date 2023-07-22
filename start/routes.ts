@@ -71,6 +71,7 @@ Route.group(() => {
   Route.get('/users/show', 'AdminsController.showUser')
   Route.delete('/users', 'AdminsController.destroyUser')
   Route.get("/users/renewals", "AdminsController.listUserRenewals")
+  Route.get("/users/google-forms", "AdminsController.indexUserGoogleForms")
 
   Route.post('/sales/precheck', 'AdminsController.preCheckSales')
   Route.post('/sales', 'AdminsController.storeSale')
