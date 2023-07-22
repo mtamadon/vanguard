@@ -380,11 +380,35 @@ export default class AdminsController {
                 id: fc.id,
                 code: fc.code,
                 title: fc.title,
-                url: '',
+                url: `https://docs.google.com/forms/d/e/${fc.id}/viewform?usp=pp_url`,
                 sheet_link: fc.sheetLink
             }
-            const url = `https://docs.google.com/forms/d/e/${fc.id}/viewform?usp=pp_url&entry.${fc.prefilledKeys.supportStaffId}=${admin.id}&entry.${fc.prefilledKeys.supportStaffEmail}=${admin.email}&entry.${fc.prefilledKeys.supportStaffName}=${admin.name}&entry.${fc.prefilledKeys.userId}=${user.id}&entry.${fc.prefilledKeys.phonenumber}=${user.phoneNumber.substring(1)}&entry.${fc.prefilledKeys.name}=${user.name}&entry.${fc.prefilledKeys.imeis}=${imeis.join('%0A')}&embedded=true`
-            form.url = url
+            if (fc.prefilledKeys.userId) {
+                form.url += `&${fc.prefilledKeys.userId}=${user.id}`
+            }
+            if (fc.prefilledKeys.name) {
+                form.url += `&${fc.prefilledKeys.name}=${user.name}`
+            }
+            if (fc.prefilledKeys.phonenumber) {
+                form.url += `&${fc.prefilledKeys.phonenumber}=${user.phoneNumber.substring(1)}`
+            }
+            if (fc.prefilledKeys.imeis) {
+                form.url += `&${fc.prefilledKeys.imei}=${imeis.join("%0A")}`
+            }
+            if (fc.prefilledKeys.supportStaffEmail) {
+                form.url += `&${fc.prefilledKeys.supportStaffEmail}=${admin.email}`
+            }
+            if (fc.prefilledKeys.supportStaffName) {
+                form.url += `&${fc.prefilledKeys.supportStaffName}=${admin.name}`
+            }
+            if (fc.prefilledKeys.supportStaffId) {
+                form.url += `&${fc.prefilledKeys.supportStaffId}=${admin.id}`
+            }
+
+            // iframe
+            form.url += `&embedded=true`
+
+            forms.push(form)
         }
 
         return {
