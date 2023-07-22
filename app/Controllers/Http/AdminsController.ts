@@ -371,7 +371,8 @@ export default class AdminsController {
         const admin = await User.findOrFail(userId)
         const forms = new Array()
         let imeis = new Array()
-        for (const tracker of user.trackers) {
+        let trackers = await Tracker.query().where('user_id', user_id)
+        for (const tracker of trackers) {
             imeis.push(tracker.imei)
         }
 
