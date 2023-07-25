@@ -257,7 +257,7 @@ export default class AdminsController {
         sale.province = province
         sale.city = city
         sale.trackersCount = imeisList.length
-        sale.trackersModel = model
+        sale.trackersModel = 'MN80'
         sale.weight = imeisList.length * 320
         sale.boxCode = Math.floor(Math.random() * 1000000000).toString()
         sale.weight = imeisList.length * 320
