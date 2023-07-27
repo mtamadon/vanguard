@@ -231,7 +231,7 @@ export default class AdminsController {
     }
 
     public async storeSale({ request, response }: HttpContextContract) {
-        const { title, reseller_id, sold_at, imeis, province, city } = request.all()
+        const { title, reseller_id, sold_at, imeis, province, city, model_on_label } = request.all()
         let trackers = await Tracker.query().whereIn('imei', imeis)
         const imeisList = Array()
         let model = ''
@@ -257,7 +257,12 @@ export default class AdminsController {
         sale.province = province
         sale.city = city
         sale.trackersCount = imeisList.length
-        sale.trackersModel = 'MN80'
+        sale.trackersModel = model
+        if (!model_on_label || model_on_label == '') {
+            sale.modelOnLabel = model
+        } else {
+            sale.modelOnLabel = model_on_label
+        }
         sale.weight = imeisList.length * 320
         sale.boxCode = Math.floor(Math.random() * 1000000000).toString()
         sale.weight = imeisList.length * 320
@@ -294,6 +299,14 @@ export default class AdminsController {
                 query.where('reseller_id', reseller_id)
             }).preload('reseller').orderBy('created_at', 'desc').limit(50)
 
+        for (const i in sales) {
+            const sale = sales[i]
+            if (sale.modelOnLabel == '' || sale.modelOnLabel == null) {
+                sale.modelOnLabel = sale.trackersModel
+                await sale.save()
+            }
+            sales[i] = sale
+        }
         return {
             sales: sales
         }

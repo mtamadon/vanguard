@@ -33,6 +33,9 @@ export default class Sale extends BaseModel {
   @column()
   public resellerId: number
 
+  @column()
+  public modelOnLabel: string
+
   @belongsTo(() => User, {
     foreignKey: 'resellerId',
   })
