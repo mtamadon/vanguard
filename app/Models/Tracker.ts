@@ -59,6 +59,9 @@ export default class Tracker extends BaseModel {
   public fuelUsage: number | null
 
   @column()
+  public saleId: number | null
+
+  @column()
   public soldToResellerAt: DateTime | null
 
   @column()

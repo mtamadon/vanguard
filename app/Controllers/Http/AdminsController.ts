@@ -266,6 +266,7 @@ export default class AdminsController {
         for (const tracker of trackers) {
             tracker.resellerId = reseller_id
             tracker.soldToResellerAt = sold_at
+            tracker.saleId = sale.id
             await tracker.save()
 
             Log.log(LogActions.TrackerSold, "ردیاب فروخته شد", tracker.imei, {
@@ -309,6 +310,7 @@ export default class AdminsController {
             }
             tracker.resellerId = null
             tracker.soldToResellerAt = null
+            tracker.saleId = null
             await tracker.save()
             Log.log(LogActions.TrackerUnsold, "ردیاب از فروش خارج شد", tracker.imei, {
                 reseller_id: sale.resellerId,
