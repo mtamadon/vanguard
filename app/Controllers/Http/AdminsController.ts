@@ -6,7 +6,6 @@ import Log, { LogActions } from 'App/Models/Log'
 import Renewal from 'App/Models/Renewal'
 import { googleFormsConfigs } from 'Config/googleForms'
 export default class AdminsController {
-
     public async indexUsers({ request }: HttpContextContract) {
         let { role, phone_number, email, imei, user_id } = request.all()
 
@@ -233,8 +232,8 @@ export default class AdminsController {
     public async storeSale({ request, response }: HttpContextContract) {
         const { title, reseller_id, sold_at, imeis, province, city, model_on_label } = request.all()
         let trackers = await Tracker.query().whereIn('imei', imeis)
-        const imeisList = Array()
         let model = ''
+        const imeisList = new Array()
         for (const imei of imeis) {
             const tracker = trackers.find((tracker) => tracker.imei == imei)
             if (tracker) {
@@ -249,26 +248,50 @@ export default class AdminsController {
             }
         }
 
+        // move each 10 imeis an array
+        const imeisChunks = new Array()
+        for (let i = 0; i < imeisList.length; i += 10) {
+            imeisChunks.push(imeisList.slice(i, i + 10))
+        }
+
+
+        let sale
+        for (const imeisChunk of imeisChunks) {
+            sale = this.storeOneSale({ title, reseller_id, sold_at, province, city, model_on_label, model, imeis: imeisChunk })
+        }
+
+        const storedSale = await Sale.findOrFail(sale.id)
+        storedSale.load('reseller')
+
+        return {
+            sale: storedSale
+        }
+    }
+
+
+    private async storeOneSale(data: { title: string, reseller_id: number, sold_at: any, province: string, city: string, model_on_label: string, model: string, imeis: string[] }) {
+        const { title, reseller_id, sold_at, province, city, model_on_label, model, imeis } = data
         const sale = new Sale()
         sale.title = title
         sale.resellerId = reseller_id
         sale.soldAt = sold_at
-        sale.imeis = JSON.stringify(imeisList)
+        sale.imeis = JSON.stringify(imeis)
         sale.province = province
         sale.city = city
-        sale.trackersCount = imeisList.length
+        sale.trackersCount = imeis.length
         sale.trackersModel = model
         if (!model_on_label || model_on_label == '') {
             sale.modelOnLabel = model
         } else {
             sale.modelOnLabel = model_on_label
         }
-        sale.weight = imeisList.length * 320
+        sale.weight = imeis.length * 320
         sale.boxCode = Math.floor(Math.random() * 1000000000).toString()
-        sale.weight = imeisList.length * 320
+        sale.weight = imeis.length * 320
         await sale.save()
 
-        for (const tracker of trackers) {
+        for (const imei of imeis) {
+            const tracker = await Tracker.findByOrFail('imei', imei)
             tracker.resellerId = reseller_id
             tracker.soldToResellerAt = sold_at
             tracker.saleId = sale.id
@@ -283,12 +306,7 @@ export default class AdminsController {
                 sale_title: sale.title,
             }).catch(console.error);
         }
-
-        const storedSale = await Sale.findOrFail(sale.id)
-        storedSale.load('reseller')
-        return {
-            sale: storedSale
-        }
+        return sale
     }
 
     public async indexSales({ request }: HttpContextContract) {
