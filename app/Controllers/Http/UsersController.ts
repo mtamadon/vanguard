@@ -16,7 +16,7 @@ export default class UsersController {
         const user = await User.findOrFail(userId)
         const oldPhoneNumber = user.phoneNumber
         console.log(request.all())
-        user.merge(request.only(['name', 'email', 'phone_number', 'city', 'country', 'language']))
+        user.merge(request.only(['name', 'email', 'phone_number', 'city', 'country', 'language', 'mfa_enabled']))
         if (oldPhoneNumber !== user.phoneNumber) {
             user.status = 2 // 2 = phone number not verified            
         }

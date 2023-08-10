@@ -42,6 +42,9 @@ export default class User extends BaseModel {
   @column()
   public telegramBot: boolean
 
+  @column()
+  public mfaEnabled: boolean
+
   @column.dateTime({
     autoCreate: true,
     serialize: (value: DateTime | null) => {
