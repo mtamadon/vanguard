@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import User from "App/Models/User"
 import UserSession from 'App/Models/UserSession'
+import FCMDevice from 'App/Models/FCMDevice'
 
 export default class UsersController {
 
@@ -23,7 +24,8 @@ export default class UsersController {
 
         if (user.status === 2) {
             // logout all sessions
-            await UserSession.query().where('user_id', user.id).delete()
+            await UserSession.query().where('user_id', user.id).update({ expires_at: new Date() })
+            await FCMDevice.query().where('user_id', user.id).delete()
         }
         return response.json({ user })
     }

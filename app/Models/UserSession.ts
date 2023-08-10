@@ -8,6 +8,9 @@ export default class UserSession extends BaseModel {
   @column()
   public userId: string
 
+  @column()
+  public expiresAt: DateTime
+  
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
