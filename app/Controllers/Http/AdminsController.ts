@@ -257,7 +257,7 @@ export default class AdminsController {
 
         let sale
         for (const imeisChunk of imeisChunks) {
-            sale = this.storeOneSale({ title, reseller_id, sold_at, province, city, model_on_label, model, imeis: imeisChunk })
+            sale = await this.storeOneSale({ title, reseller_id, sold_at, province, city, model_on_label, model, imeis: imeisChunk })
         }
 
         const storedSale = await Sale.findOrFail(sale.id)
