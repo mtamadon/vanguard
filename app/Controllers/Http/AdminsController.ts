@@ -464,10 +464,10 @@ export default class AdminsController {
         }
     }
 
-    public async destroyUserSessions({ request }: HttpContextContract) {
+    public async destroyUserSessions({ request, userId }: HttpContextContract) {
         const { session_ids } = request.all()
 
-        const user = await User.findOrFail(request.input('user_id'))
+        const adminUser = await User.findOrFail(userId)
 
         for (const id of session_ids) {
             try {
@@ -482,7 +482,7 @@ export default class AdminsController {
         }
 
         Log.log(LogActions.UserSessionDelete, "نشست های کاربر حذف شد", null, {
-            user_id: user.id,
+            user_id: adminUser.id,
             session_ids: session_ids
         })
 
