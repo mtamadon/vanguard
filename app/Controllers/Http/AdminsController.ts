@@ -5,6 +5,9 @@ import Sale from 'App/Models/Sale'
 import Log, { LogActions } from 'App/Models/Log'
 import Renewal from 'App/Models/Renewal'
 import { googleFormsConfigs } from 'Config/googleForms'
+import UserSession from 'App/Models/UserSession'
+import { DateTime } from 'luxon'
+import FCMDevice from 'App/Models/FCMDevice'
 export default class AdminsController {
     public async indexUsers({ request }: HttpContextContract) {
         let { role, phone_number, email, imei, user_id } = request.all()
@@ -447,6 +450,44 @@ export default class AdminsController {
 
         return {
             forms: forms
+        }
+    }
+
+    public async indexUserSessions({ request }: HttpContextContract) {
+        const { user_id } = request.all()
+        const sessions = await UserSession.query().where('user_id', user_id).andWhereNot('service_id', 'LIKE', 'login-as-user:%').limit(50).orderBy('last_accessed_at', 'desc')
+        for (const session of sessions) {
+            session.token = ""
+        }
+        return {
+            user_sessions: sessions
+        }
+    }
+
+    public async destroyUserSessions({ request }: HttpContextContract) {
+        const { session_ids } = request.all()
+
+        const user = await User.findOrFail(request.input('user_id'))
+
+        for (const id of session_ids) {
+            try {
+                const userSession = await UserSession.findOrFail(id)
+
+                userSession.expiresAt = DateTime.now()
+                await userSession.save()
+                await FCMDevice.query().where('user_session_id', userSession.id).delete()
+            } catch (e) {
+                console.log(e)
+            }
+        }
+
+        Log.log(LogActions.UserSessionDelete, "نشست های کاربر حذف شد", null, {
+            user_id: user.id,
+            session_ids: session_ids
+        })
+
+        return {
+            success: true
         }
     }
 }
