@@ -12,6 +12,7 @@ export enum LogActions {
   TrackerSold = 'tracker.sold',
   TrackerUnsold = 'tracker.unsold',
   TrackerRenewed = 'tracker.renewed',
+  UserSessionDelete = 'usersession.delete',
 }
 
 export default class Log extends BaseModel {
@@ -40,7 +41,7 @@ export default class Log extends BaseModel {
   public updatedAt: DateTime
 
 
-  static async log(action: LogActions, message: string, trackerImei?: number, meta?: Object) {
+  static async log(action: LogActions, message: string, trackerImei?: number | null, meta?: Object) {
     const ctx = HttpContext.get()
 
     const log = new Log()
