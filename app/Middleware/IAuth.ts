@@ -14,7 +14,7 @@ export default class IAuth {
 
     ctx.userSessionId = ctx.request.header('X-User-Session-Id', '')
 
-    console.log("userId:", ctx.userId, "role", ctx.userRole)
+    console.log("userId:", ctx.userId, "role", ctx.userRole, "sessionId", ctx.userSessionId)
 
     await next()
     console.log("resBody: ", JSON.parse(JSON.stringify(ctx.response.getBody())))

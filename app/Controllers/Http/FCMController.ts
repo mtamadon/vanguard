@@ -13,6 +13,7 @@ export default class FCMController {
             device.userId = userId
             device.platform = platform
             device.userSessionId = userSessionId
+            console.log('device', device)
             await device.save()
         } else {
             const newDevice = new FCMDevice()
@@ -21,6 +22,7 @@ export default class FCMController {
             newDevice.platform = platform
             newDevice.token_md5 = token_md5
             newDevice.userSessionId = userSessionId
+            console.log('newDevice', newDevice)
             await newDevice.save()
         }
 
