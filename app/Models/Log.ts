@@ -13,6 +13,9 @@ export enum LogActions {
   TrackerUnsold = 'tracker.unsold',
   TrackerRenewed = 'tracker.renewed',
   UserSessionDelete = 'usersession.delete',
+  AfterSaleCreate = 'aftersale.create',
+  AfterSaleUpdate = 'aftersale.update',
+  AfterSaleDelete = 'aftersale.delete'
 }
 
 export default class Log extends BaseModel {
