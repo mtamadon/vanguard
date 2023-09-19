@@ -80,6 +80,11 @@ Route.group(() => {
   Route.get('/sales', 'AdminsController.indexSales')
   Route.delete('/sales', 'AdminsController.destroySale')
 
+  Route.get('/after-sales', 'AdminsController.indexAfterSales')
+  Route.post('/after-sales', 'AdminsController.storeAfterSales')
+  Route.put('/after-sales', 'AdminsController.updateAfterSales')
+  Route.delete('/after-sales', 'AdminsController.destroyAfterSales')
+
 }).prefix('admin').middleware('iauth')
 
 Route.get("/healthcheck", async ({ response }: HttpContextContract) => {

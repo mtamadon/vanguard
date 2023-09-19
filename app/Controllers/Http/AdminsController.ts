@@ -8,6 +8,7 @@ import { googleFormsConfigs } from 'Config/googleForms'
 import UserSession from 'App/Models/UserSession'
 import { DateTime } from 'luxon'
 import FCMDevice from 'App/Models/FCMDevice'
+import AfterSale from 'App/Models/AfterSale'
 export default class AdminsController {
     public async indexUsers({ request }: HttpContextContract) {
         let { role, phone_number, email, imei, user_id } = request.all()
@@ -490,5 +491,161 @@ export default class AdminsController {
             success: true
         }
     }
+    public async indexAfterSales({ request }: HttpContextContract) {
+        const { user_phone_number, imei, created_at } = request.all()
+
+        let create_date: Date
+
+        if (created_at) {
+            create_date = new Date(created_at)
+        }
+
+        if (user_phone_number != '') {
+            const user = await User.findBy('phone_number', "+" + user_phone_number)
+            var userAfterSales: AfterSale[] = []
+
+            if (user) {
+                let user_id = user.id
+                userAfterSales = await AfterSale.query().where('user_id', user_id)
+                    .if(imei != "0", (query) => {
+                        query.where('imei', imei)
+                    })
+                    .if(created_at, (query) => {
+                        query.where('created_at ', '>=', create_date.toISOString())
+
+                        create_date.setDate(create_date.getDate() + 1)
+                        query.where('created_at', '<=', create_date.toISOString())
+                    })
+
+
+            }
+            for (const aftersale of userAfterSales) {
+                aftersale.statusTransitions = JSON.parse(JSON.stringify(aftersale.statusTransitions))
+            }
+            return {
+                after_sales: userAfterSales
+            }
+        }
+
+        const aftersales = await AfterSale.query()
+            .if(imei != "0", (query) => {
+                query.where('imei', imei)
+            }).if(created_at, (query) => {
+                query.where('created_at ', '>=', create_date.toISOString())
+
+                create_date.setDate(create_date.getDate() + 1)
+                query.where('created_at', '<=', create_date.toISOString())
+            }).orderByRaw('created_at desc').limit(50)
+
+        for (const aftersale of aftersales) {
+            aftersale.statusTransitions = JSON.parse(JSON.stringify(aftersale.statusTransitions))
+        }
+
+        return {
+            after_sales: aftersales
+        }
+    }
+
+    public async storeAfterSales({ request, response }: HttpContextContract) {
+        const { imei, note, status } = request.all()
+
+        const tracker = await Tracker.findOrFail(imei)
+        if (!tracker.userId) {
+            return response.badRequest({
+                message: "این ردیاب به کاربری اختصاص داده نشده است"
+            })
+        }
+        var aftersale = await AfterSale.findBy('imei', imei)
+        if (aftersale) {
+            return response.badRequest({
+                message: "یک خدمات پس از فروش با این سریال ردیاب از قبل وجود دارد"
+            })
+        }
+        aftersale = new AfterSale()
+        aftersale.userId = tracker.userId
+        aftersale.imei = imei
+        aftersale.note = note
+        aftersale.status = status
+
+        const transition = {
+            last_status: "",
+            new_status: aftersale.status,
+            timestamp: DateTime.now()
+        }
+        let status_transitions = new Array()
+        status_transitions.push(transition)
+        aftersale.statusTransitions = JSON.stringify(status_transitions)
+        await aftersale.save()
+
+        aftersale.statusTransitions = status_transitions 
+        Log.log(LogActions.AfterSaleCreate, "خدمات پس از فروش اضافه شد", null, {
+            aftersale_id: aftersale.id,
+            aftersale_userid: aftersale.userId,
+            aftersale_imei: aftersale.imei
+        })
+
+        return {
+            after_sales: aftersale
+        }
+    }
+
+    public async updateAfterSales({ request, response }: HttpContextContract) {
+
+        if (request.input('new_imei')) {
+            const tracker = Tracker.findBy('imei', request.input('new_imei'))
+            if (!tracker) {
+                return response.badRequest({
+                    message: "ردیابی با این شماره سریال در سامانه وجود ندارد"
+                })
+            }
+        }
+
+        const afterSale = await AfterSale.findOrFail(request.input('aftersale_id'))
+        let lastStatus = afterSale.status
+        let newStatus = request.input('status')
+        if (newStatus) {
+            const new_transition = {
+                last_status: lastStatus,
+                new_status: newStatus,
+                timestamp: DateTime.now()
+            }
+            let status_transitions = JSON.parse(JSON.stringify(afterSale.statusTransitions))
+            status_transitions.push(new_transition)
+            afterSale.statusTransitions = JSON.stringify(status_transitions)
+        }
+
+        afterSale.merge(request.only(['status', 'note', 'new_imei']))
+        await afterSale.save()
+
+        var updateLog = {
+            aftersale_id: afterSale.id,
+            aftersale_note: afterSale.note
+        }
+        if (newStatus) {
+            updateLog['lastStaus'] = lastStatus
+            updateLog['newStatus'] = newStatus
+        }
+        if (request.input('new_imei')) {
+            updateLog['new_imei'] = afterSale.newImei
+        }
+        Log.log(LogActions.AfterSaleUpdate, "خدمات پس از فروش بروزرسانی شد", null, updateLog)
+
+        return {
+            success: true
+        }
+    }
+
+    public async destroyAfterSales({ request }: HttpContextContract) {
+        const afterSale = await AfterSale.findOrFail(request.input('aftersale_id'))
+
+        await afterSale.delete()
+
+        Log.log(LogActions.AfterSaleDelete, "خدمات پس از فروش حذف شد", null, JSON.stringify(afterSale))
+
+        return {
+            success: true
+        }
+    }
+
 }
 
