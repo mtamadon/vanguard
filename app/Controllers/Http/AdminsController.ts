@@ -71,9 +71,10 @@ export default class AdminsController {
             if (user) {
                 user_id = user.id
             } else {
-                user_id = "0"
+                user_id = "-1"
             }
         }
+
         const trackers = await Tracker.query()
             .if(user_id != "0", (query) => {
                 query.where('user_id', user_id)
