@@ -502,7 +502,7 @@ export default class AdminsController {
 
         if (user_phone_number != '') {
             const user = await User.findBy('phone_number', "+" + user_phone_number)
-            var userAfterSales: AfterSale[] = []
+            let userAfterSales: AfterSale[] = []
 
             if (user) {
                 let user_id = user.id
@@ -555,7 +555,7 @@ export default class AdminsController {
                 message: "این ردیاب به کاربری اختصاص داده نشده است"
             })
         }
-        var aftersale = await AfterSale.findBy('imei', imei)
+        let aftersale = await AfterSale.findBy('imei', imei)
         if (aftersale) {
             return response.badRequest({
                 message: "یک خدمات پس از فروش با این سریال ردیاب از قبل وجود دارد"
@@ -617,7 +617,7 @@ export default class AdminsController {
         afterSale.merge(request.only(['status', 'note', 'new_imei']))
         await afterSale.save()
 
-        var updateLog = {
+        let updateLog = {
             aftersale_id: afterSale.id,
             aftersale_note: afterSale.note
         }
