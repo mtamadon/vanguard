@@ -73,7 +73,7 @@ export default class AdminsController {
             } else {
                 const tracker = await Tracker.findBy('simcard_number', "+" + user_phone_number)
                 if (tracker && tracker.userId) {
-                    user_id = tracker.userId
+                    imei = tracker.imei
                 } else {
                     user_id = "-1"
                 }
