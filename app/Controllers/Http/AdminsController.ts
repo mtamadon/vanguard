@@ -71,7 +71,12 @@ export default class AdminsController {
             if (user) {
                 user_id = user.id
             } else {
-                user_id = "-1"
+                const tracker = await Tracker.findBy('simcard_number', "+" + user_phone_number)
+                if (tracker && tracker.userId) {
+                    user_id = tracker.userId
+                } else {
+                    user_id = "-1"
+                }
             }
         }
 
@@ -578,7 +583,7 @@ export default class AdminsController {
         aftersale.statusTransitions = JSON.stringify(status_transitions)
         await aftersale.save()
 
-        aftersale.statusTransitions = status_transitions 
+        aftersale.statusTransitions = status_transitions
         Log.log(LogActions.AfterSaleCreate, "خدمات پس از فروش اضافه شد", null, {
             aftersale_id: aftersale.id,
             aftersale_userid: aftersale.userId,
