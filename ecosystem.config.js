@@ -1,7 +1,7 @@
 module.exports = {
     apps: [{
         name: 'van',
-        script: 'source ~/.nvm/nvm.sh ; node ace migration:run && node ace serve --watch',
+        script: 'source ~/.nvm/nvm.sh; node ace serve --watch',
     }],
 
     // Deployment Configuration
