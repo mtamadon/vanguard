@@ -9,6 +9,7 @@ import UserSession from 'App/Models/UserSession'
 import { DateTime } from 'luxon'
 import FCMDevice from 'App/Models/FCMDevice'
 import AfterSale from 'App/Models/AfterSale'
+import { HttpContext } from '@adonisjs/core/build/standalone'
 export default class AdminsController {
     public async indexUsers({ request }: HttpContextContract) {
         let { role, phone_number, email, imei, user_id } = request.all()
@@ -23,9 +24,13 @@ export default class AdminsController {
                 user_id = "-1"
             }
         }
-
-        const users = await User.query().if(role, (query) => {
-            query.where('role', role)
+        const ctx = HttpContext.get()
+        const users = await User.query().if(ctx, (query) => {
+            if (ctx?.userRole == '12') {
+                query.where('role', 1) // 1 is for normal users
+            } else if (role) {
+                query.where('role', role)
+            }
         }).if(phone_number, (query) => {
             query.where('phone_number', "+" + phone_number)
         }).if(email, (query) => {
@@ -33,7 +38,6 @@ export default class AdminsController {
         }).if(user_id != "0", (query) => {
             query.where('id', user_id)
         }).preload('trackers').orderBy('id', 'desc').limit(50)
-
 
         return {
             users: users
