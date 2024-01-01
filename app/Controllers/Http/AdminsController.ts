@@ -11,7 +11,7 @@ import FCMDevice from 'App/Models/FCMDevice'
 import AfterSale from 'App/Models/AfterSale'
 import { HttpContext } from '@adonisjs/core/build/standalone'
 export default class AdminsController {
-    public async indexUsers({ request }: HttpContextContract) {
+    public async indexUsers({ request, userRole }: HttpContextContract) {
         let { role, phone_number, email, imei, user_id } = request.all()
 
         if (imei) {
@@ -24,9 +24,8 @@ export default class AdminsController {
                 user_id = "-1"
             }
         }
-        const ctx = HttpContext.get()
-        const users = await User.query().if(ctx, (query) => {
-            if (ctx?.userRole == '12') {
+        const users = await User.query().if(userRole, (query) => {
+            if (userRole == '12') {
                 query.where('role', 1) // 1 is for normal users
             } else if (role) {
                 query.where('role', role)
@@ -38,7 +37,6 @@ export default class AdminsController {
         }).if(user_id != "0", (query) => {
             query.where('id', user_id)
         }).preload('trackers').orderBy('id', 'desc').limit(50)
-
         return {
             users: users
         }
