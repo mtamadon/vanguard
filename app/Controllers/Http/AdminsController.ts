@@ -9,7 +9,6 @@ import UserSession from 'App/Models/UserSession'
 import { DateTime } from 'luxon'
 import FCMDevice from 'App/Models/FCMDevice'
 import AfterSale from 'App/Models/AfterSale'
-import { HttpContext } from '@adonisjs/core/build/standalone'
 export default class AdminsController {
     public async indexUsers({ request, userRole }: HttpContextContract) {
         let { role, phone_number, email, imei, user_id } = request.all()
